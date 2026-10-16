@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { GitCompareArrows, Package, ScanLine, Trash2 } from 'lucide-react'
+import { Package, Trash2 } from 'lucide-react'
 import type { IngredientInfo, Tag } from '../data/types'
 import { analyse, entriesOf } from '../lib/analyze'
 import type { SavedProduct } from '../lib/storage'
@@ -53,14 +53,13 @@ export function Compare({ products, onDelete, onGoScan }: Props) {
 
   if (!products.length) {
     return (
-      <div className="empty-state card">
-        <div className="empty-icon">
-          <GitCompareArrows size={30} />
-        </div>
-        <h2>Compare products side by side</h2>
-        <p className="muted">Scan a label, press “Save to compare”, then scan another. Saved products stay in this browser only.</p>
+      <div className="empty-state panel">
+        <h2>Nothing saved yet</h2>
+        <p className="muted">
+          Scan a label and press “Save for comparing”, then do the same for another product. Saved products are kept in this browser only.
+        </p>
         <button className="btn primary" onClick={onGoScan}>
-          <ScanLine size={18} /> Scan a label
+          Scan a label
         </button>
       </div>
     )
@@ -72,7 +71,7 @@ export function Compare({ products, onDelete, onGoScan }: Props) {
     <div className="compare">
       <div className="page-head">
         <h2>Compare</h2>
-        <p className="muted">Pick up to three saved products. Counts are facts about the ingredient lists — not a health score.</p>
+        <p className="muted">Pick up to three saved products. The numbers count what’s on each list. They aren’t a health score.</p>
       </div>
 
       <div className="saved-grid">
@@ -124,7 +123,7 @@ export function Compare({ products, onDelete, onGoScan }: Props) {
                 ))}
               </tr>
               <tr>
-                <th>High attention</th>
+                <th>Notable concerns</th>
                 {data.map((d) => (
                   <td key={d.p.id} className={d.high.length === minOf(data.map((x) => x.high.length)) ? 'best' : ''}>
                     <span className="num">{d.high.length}</span>
@@ -179,7 +178,7 @@ export function Compare({ products, onDelete, onGoScan }: Props) {
           <p className="shared">
             <strong>In all selected:</strong> {names(shared)}
           </p>
-          <p className="fine">Green cells mark the lowest count in a row. Fewer flagged ingredients doesn’t automatically mean healthier — amounts and the overall diet matter.</p>
+          <p className="fine">Shaded cells have the lowest count in their row. Fewer flagged ingredients doesn’t make a product healthier on its own. Amounts and your overall diet matter more.</p>
         </div>
       ) : (
         <p className="muted center">Select at least two products to compare.</p>

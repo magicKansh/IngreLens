@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { BookOpen, ChevronDown, CircleHelp, ExternalLink, LoaderCircle, Pencil, Sparkles } from 'lucide-react'
+import { ChevronDown, ExternalLink, LoaderCircle } from 'lucide-react'
 import type { IngredientInfo } from '../data/types'
 import type { MatchResult } from '../lib/match'
 import { referenceLinks, wikipediaLookup, type WikiSummary } from '../lib/lookup'
@@ -68,10 +68,9 @@ function UnknownDetails({ term }: { term: string }) {
   return (
     <div className="ing-details">
       <div className="honest-note">
-        <CircleHelp size={18} aria-hidden />
         <p>
-          IngreLens has no curated, sourced entry for <strong>“{term}”</strong>, so we won’t guess at its benefits or risks. If it looks like
-          an OCR mistake, edit it in the ingredient list above.
+          We don’t have a checked entry for <strong>“{term}”</strong>, so we won’t guess at what it does or whether it’s a concern. If it’s a
+          scanning mistake, fix it in the ingredient list above.
         </p>
       </div>
       {state.loading && (
@@ -82,10 +81,10 @@ function UnknownDetails({ term }: { term: string }) {
       {state.data && (
         <div className="wiki">
           <h4>
-            <BookOpen size={15} aria-hidden /> General reference · Wikipedia: {state.data.title}
+            From Wikipedia: {state.data.title}
           </h4>
           <p>{state.data.extract}</p>
-          <p className="fine">Encyclopaedic summary only — not a safety or health assessment. The article may not be about this exact ingredient.</p>
+          <p className="fine">This is a general summary, not a health assessment, and the article may not be about this exact ingredient.</p>
           <a href={state.data.url} target="_blank" rel="noopener noreferrer" className="link">
             Read the article <ExternalLink size={13} />
           </a>
@@ -131,7 +130,7 @@ export function IngredientCard({ match, index, onRename, onRejectFuzzy, defaultO
         <span className="ing-title">
           <span className="ing-name">{info ? info.name : match.input}</span>
           <span className="ing-sub">
-            {info ? info.category : 'Not in the curated database'}
+            {info ? info.category : 'No checked entry'}
             {info && match.input.toLowerCase() !== info.name.toLowerCase() && <> · on label: “{match.input}”</>}
             {match.parent && <> · part of {match.parent}</>}
           </span>
@@ -139,8 +138,8 @@ export function IngredientCard({ match, index, onRename, onRejectFuzzy, defaultO
         <span className="ing-badges">
           {info?.eNumbers?.[0] && <span className="badge mono">{info.eNumbers[0]}</span>}
           {info?.allergen && <span className="badge allergen">Allergen</span>}
-          {match.status === 'fuzzy' && <span className="badge fuzzy">Possible match</span>}
-          {info ? <AttentionBadge level={info.attention} /> : <span className="badge unknown">Unknown</span>}
+          {match.status === 'fuzzy' && <span className="badge fuzzy">Check spelling</span>}
+          {info ? <AttentionBadge level={info.attention} /> : <span className="badge unknown">Not in database</span>}
         </span>
         <ChevronDown className="chev" size={18} aria-hidden />
       </button>
@@ -148,20 +147,18 @@ export function IngredientCard({ match, index, onRename, onRejectFuzzy, defaultO
         <div className="ing-body">
           {match.status === 'fuzzy' && info && (
             <div className="fuzzy-note">
-              <Sparkles size={16} aria-hidden />
               <span>
-                The label text “{match.input}” looks like <strong>{info.name}</strong> ({Math.round(match.score * 100)}% similar) — possibly an OCR
-                error.
+                “{match.input}” is probably <strong>{info.name}</strong> misread by the scanner. Is that right?
               </span>
               <span className="fuzzy-actions">
                 {onRename && (
                   <button className="btn sm" onClick={() => onRename(info.name)}>
-                    <Pencil size={14} /> Yes, correct it
+                    Yes, fix it
                   </button>
                 )}
                 {onRejectFuzzy && (
                   <button className="btn sm ghost" onClick={onRejectFuzzy}>
-                    No, it’s different
+                    No
                   </button>
                 )}
               </span>

@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react'
-import { Info, ShieldAlert } from 'lucide-react'
 import type { Attention, Tag } from '../data/types'
 import { ATTENTION_LABEL, ATTENTION_ORDER, type Analysis } from '../lib/analyze'
 import { IngredientCard } from './IngredientCard'
@@ -50,66 +49,54 @@ export function Results({ analysis, itemKeys, onRename, onRejectFuzzy }: Props) 
   return (
     <div className="results">
       <div className="summary">
-        <div className="summary-main card">
-          <p className="eyebrow">Label breakdown</p>
-          <div className="stat-row">
-            <div className="stat">
-              <span className="stat-num">{total}</span>
-              <span className="stat-label">ingredients</span>
-            </div>
-            <div className="stat">
-              <span className="stat-num">{coverage}%</span>
-              <span className="stat-label">recognised</span>
-            </div>
-            <div className="stat">
-              <span className="stat-num">{analysis.attention.high + analysis.attention.moderate}</span>
-              <span className="stat-label">worth a closer look</span>
-            </div>
+        <div className="summary-main panel">
+          <div className="panel-title">Breakdown</div>
+          <div className="facts-row big">
+            <span>Ingredients</span>
+            <strong>{total}</strong>
           </div>
-          <div className="att-bar" aria-label="Attention breakdown">
-            {ATTENTION_ORDER.map((a) =>
-              analysis.attention[a] ? <span key={a} className={`seg att-${a}`} style={{ flex: analysis.attention[a] }} title={`${ATTENTION_LABEL[a]}: ${analysis.attention[a]}`} /> : null,
-            )}
-            {analysis.unknown + analysis.uncertain > 0 && <span className="seg att-unknown" style={{ flex: analysis.unknown + analysis.uncertain }} title="Unknown / uncertain" />}
+          <div className="facts-row">
+            <span>Found in our database</span>
+            <strong>
+              {analysis.recognised} of {total}
+              <span className="muted"> ({coverage}%)</span>
+            </strong>
           </div>
-          <div className="att-legend">
-            {ATTENTION_ORDER.map((a) => (
-              <span key={a}>
-                <i className={`dot att-${a}`} /> {ATTENTION_LABEL[a]} · {analysis.attention[a]}
+          <div className="rule-thick" />
+          {ATTENTION_ORDER.map((a) => (
+            <div className="facts-row" key={a}>
+              <span>
+                <i className={`dot att-${a}`} /> {ATTENTION_LABEL[a]}
               </span>
-            ))}
+              <strong>{analysis.attention[a]}</strong>
+            </div>
+          ))}
+          <div className="facts-row">
             <span>
-              <i className="dot att-unknown" /> Unknown/uncertain · {analysis.unknown + analysis.uncertain}
+              <i className="dot att-unknown" /> Unknown or unsure
             </span>
+            <strong>{analysis.unknown + analysis.uncertain}</strong>
           </div>
-          <p className="fine">
-            <Info size={13} aria-hidden /> “Attention” is a reading aid based on the cited evidence and regulatory status — not a safety rating or a
-            verdict on the product. Ingredients are listed by weight, highest first.
+          <p className="footnote">
+            These levels summarise what the linked sources say. They aren’t a safety rating for the product. Ingredients are listed by weight,
+            largest first.
           </p>
         </div>
 
         <div className="summary-side">
-          <div className={`card allergen-card ${allergenList.length ? 'has' : ''}`}>
-            <p className="eyebrow">
-              <ShieldAlert size={14} aria-hidden /> Allergens
-            </p>
+          <div className="panel">
+            <div className="panel-title sm">Allergens</div>
             {allergenList.length ? (
-              <div className="chips">
-                {allergenList.map((a) => (
-                  <span className="chip allergen" key={a}>
-                    {a}
-                  </span>
-                ))}
-              </div>
+              <p className="allergen-list">{allergenList.join(', ')}</p>
             ) : (
-              <p className="muted">No major allergens recognised in this list.</p>
+              <p className="muted">None of the major allergens were found in this list.</p>
             )}
-            {analysis.mayContain.length > 0 && <p className="fine">May contain: {analysis.mayContain.join(', ')}</p>}
-            <p className="fine">Always check the physical label. OCR can miss words, and unrecognised ingredients are not checked.</p>
+            {analysis.mayContain.length > 0 && <p className="footnote">May contain: {analysis.mayContain.join(', ')}</p>}
+            <p className="footnote">Check the pack too. The scan can miss words, and we can’t check ingredients we don’t recognise.</p>
           </div>
           {highlights.length > 0 && (
-            <div className="card">
-              <p className="eyebrow">At a glance</p>
+            <div className="panel">
+              <div className="panel-title sm">Also in this list</div>
               <dl className="glance">
                 {highlights.map((h) => (
                   <div key={h.tag}>
@@ -124,13 +111,13 @@ export function Results({ analysis, itemKeys, onRename, onRejectFuzzy }: Props) 
       </div>
 
       <div className="results-toolbar">
-        <div className="seg-control" role="tablist">
+        <div className="text-tabs" role="tablist">
           {(
             [
-              ['all', `All · ${total}`],
-              ['attention', 'Worth a look'],
+              ['all', `All (${total})`],
+              ['attention', 'Worth noting'],
               ['allergens', 'Allergens'],
-              ['unknown', `Unknown · ${analysis.unknown + analysis.uncertain}`],
+              ['unknown', `Unknown (${analysis.unknown + analysis.uncertain})`],
             ] as [Filter, string][]
           ).map(([f, l]) => (
             <button key={f} role="tab" aria-selected={filter === f} className={filter === f ? 'on' : ''} onClick={() => setFilter(f)}>

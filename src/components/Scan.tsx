@@ -1,18 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent } from 'react'
-import {
-  Barcode,
-  Camera,
-  CircleCheck,
-  FileText,
-  ImagePlus,
-  LoaderCircle,
-  Plus,
-  RotateCcw,
-  Save,
-  ScanLine,
-  TriangleAlert,
-  X,
-} from 'lucide-react'
+import { Camera, LoaderCircle, TriangleAlert, X } from 'lucide-react'
 import { parseIngredients } from '../lib/parse'
 import { analyse } from '../lib/analyze'
 import { makeThumbnail, recognise } from '../lib/ocr'
@@ -223,39 +210,25 @@ export function Scan({ onSave, notify }: Props) {
     return (
       <div className="landing">
         <div className="hero">
-          <p className="eyebrow accent">
-            <ScanLine size={14} /> Ingredient label scanner
-          </p>
-          <h1>
-            Know what’s <em>really</em> in it.
-          </h1>
+          <h1>Read the label.</h1>
           <p className="lede">
-            Photograph an ingredient list. IngreLens reads it, explains every ingredient in plain language, and shows what the evidence and
-            regulators actually say — with sources you can check.
+            Take a photo of an ingredient list. IngreLens reads it and tells you what each ingredient is, why it’s in there, and what
+            regulators and studies have found, with links so you can check for yourself.
           </p>
-          <ul className="hero-points">
-            <li>
-              <CircleCheck size={16} /> Free, no account, runs in your browser
-            </li>
-            <li>
-              <CircleCheck size={16} /> Cited sources: FDA, EFSA, WHO, NIH
-            </li>
-            <li>
-              <CircleCheck size={16} /> Honest about unknowns
-            </li>
-          </ul>
+          <p className="hero-meta">Free · No account · Photos stay on your device</p>
         </div>
 
-        <div className="capture card">
-          <div className="seg-control full" role="tablist">
+        <div className="capture panel">
+          <div className="panel-title">Scan a label</div>
+          <div className="text-tabs" role="tablist">
             <button role="tab" aria-selected={mode === 'photo'} className={mode === 'photo' ? 'on' : ''} onClick={() => setMode('photo')}>
-              <ImagePlus size={16} /> Photo
+              Photo
             </button>
             <button role="tab" aria-selected={mode === 'text'} className={mode === 'text' ? 'on' : ''} onClick={() => setMode('text')}>
-              <FileText size={16} /> Type / paste
+              Type or paste
             </button>
             <button role="tab" aria-selected={mode === 'barcode'} className={mode === 'barcode' ? 'on' : ''} onClick={() => setMode('barcode')}>
-              <Barcode size={16} /> Barcode
+              Barcode
             </button>
           </div>
 
@@ -274,18 +247,15 @@ export function Scan({ onSave, notify }: Props) {
                 tabIndex={0}
                 onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && fileRef.current?.click()}
               >
-                <div className="dz-icon">
-                  <ImagePlus size={28} />
-                </div>
-                <p className="dz-title">Drop a label photo here</p>
-                <p className="muted">or click to browse · you can also paste an image</p>
+                <p className="dz-title">Drop a photo of the ingredient list</p>
+                <p className="muted">or click to choose one. Pasting an image works too.</p>
               </div>
               <div className="row gap-s capture-actions">
                 <button className="btn primary grow" onClick={() => cameraRef.current?.click()}>
-                  <Camera size={18} /> Take a photo
+                  <Camera size={17} /> Take a photo
                 </button>
                 <button className="btn grow" onClick={() => fileRef.current?.click()}>
-                  <ImagePlus size={18} /> Choose file
+                  Choose file
                 </button>
               </div>
               <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => acceptFile(e.target.files?.[0])} />
@@ -295,7 +265,7 @@ export function Scan({ onSave, notify }: Props) {
                   <TriangleAlert size={15} /> {fileError}
                 </p>
               )}
-              <p className="tip">Tip: fill the frame with the ingredient list, keep it flat and well lit, and avoid glare.</p>
+              <p className="tip">Get close enough that the list fills the frame. Flat, well lit and no glare works best.</p>
             </>
           )}
 
@@ -309,7 +279,7 @@ export function Scan({ onSave, notify }: Props) {
                 onChange={(e) => setRawText(e.target.value)}
               />
               <button className="btn primary" disabled={!rawText.trim()} onClick={() => applyText(rawText)}>
-                <ScanLine size={18} /> Analyse ingredients
+                Look up these ingredients
               </button>
             </div>
           )}
@@ -327,21 +297,21 @@ export function Scan({ onSave, notify }: Props) {
                 <input inputMode="numeric" placeholder="e.g. 5449000000996" value={barcode} onChange={(e) => setBarcode(e.target.value)} />
               </label>
               <button className="btn primary" disabled={barcodeBusy || barcode.replace(/\D/g, '').length < 6}>
-                {barcodeBusy ? <LoaderCircle className="spin" size={18} /> : <Barcode size={18} />} Look up product
+                {barcodeBusy && <LoaderCircle className="spin" size={17} />} Look up product
               </button>
               {barcodeError && (
                 <p className="error-text">
                   <TriangleAlert size={15} /> {barcodeError}
                 </p>
               )}
-              <p className="tip">Uses the free, community-maintained Open Food Facts database. Its data can be incomplete — compare with the pack.</p>
+              <p className="tip">Looks the product up on Open Food Facts, a free database run by volunteers. Entries can be out of date, so compare with the pack.</p>
             </form>
           )}
 
           <div className="samples">
-            <span className="muted">No label handy? Try a sample:</span>
+            <span className="muted">Or try an example label:</span>
             {SAMPLES.map((s, i) => (
-              <button key={s.name} className="chip-btn" onClick={() => void trySample(i)}>
+              <button key={s.name} className="link-btn" onClick={() => void trySample(i)}>
                 {s.name}
               </button>
             ))}
@@ -366,10 +336,10 @@ export function Scan({ onSave, notify }: Props) {
         />
         <div className="row gap-s">
           <button className="btn ghost" onClick={reset}>
-            <RotateCcw size={16} /> New scan
+            New scan
           </button>
           <button className="btn primary" disabled={!items.length || saved} onClick={() => void save()}>
-            {saved ? <CircleCheck size={16} /> : <Save size={16} />} {saved ? 'Saved' : 'Save to compare'}
+            {saved ? 'Saved' : 'Save for comparing'}
           </button>
         </div>
       </div>
@@ -381,7 +351,7 @@ export function Scan({ onSave, notify }: Props) {
               <img src={image} alt="Uploaded ingredient label" />
               {running && <div className="scanline" aria-hidden />}
               <button className="preview-change btn sm" onClick={() => fileRef.current?.click()}>
-                <ImagePlus size={14} /> Replace
+                Use another photo
               </button>
               <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => acceptFile(e.target.files?.[0])} />
             </div>
@@ -403,7 +373,7 @@ export function Scan({ onSave, notify }: Props) {
                 <div className="row gap-s">
                   {image && (
                     <button className="btn sm" onClick={() => void runOcr(image)}>
-                      <RotateCcw size={14} /> Try again
+                      Try again
                     </button>
                   )}
                 </div>
@@ -415,10 +385,10 @@ export function Scan({ onSave, notify }: Props) {
               <div className="card-head">
                 <h3>Recognised text</h3>
                 {ocr.kind === 'done' && ocr.confidence !== null && (
-                  <span className={`badge ${lowConfidence ? 'fuzzy' : 'soft'}`}>OCR confidence {Math.round(ocr.confidence)}%</span>
+                  <span className={`small ${lowConfidence ? 'warn-inline' : 'muted'}`}>{Math.round(ocr.confidence)}% OCR confidence</span>
                 )}
               </div>
-              {lowConfidence && <p className="warn-text">Low confidence — check the text against the label and fix any errors.</p>}
+              {lowConfidence && <p className="warn-text">The scan wasn’t very clear. Compare this text with the label and fix anything that’s wrong.</p>}
               {!foundHeader && items.length > 0 && (
                 <p className="warn-text">We couldn’t find the word “Ingredients”, so the whole text was used. Delete anything that isn’t an ingredient.</p>
               )}
@@ -433,7 +403,7 @@ export function Scan({ onSave, notify }: Props) {
                 placeholder="Recognised text will appear here. You can also type or paste the ingredient list."
               />
               <button className="btn sm" disabled={!textDirty || !rawText.trim()} onClick={() => applyText(rawText)}>
-                <ScanLine size={14} /> Re-extract ingredients from text
+                Update list from this text
               </button>
             </div>
           )}
@@ -442,7 +412,7 @@ export function Scan({ onSave, notify }: Props) {
         <div className="card editor">
           <div className="card-head">
             <h3>Ingredients ({items.length})</h3>
-            <span className="muted small">Click a name to correct it</span>
+            <span className="muted small">Edit any name to fix it</span>
           </div>
           {running && items.length === 0 && (
             <div className="skeleton-list">
@@ -479,7 +449,7 @@ export function Scan({ onSave, notify }: Props) {
           >
             <input placeholder="Add a missing ingredient" value={newItem} onChange={(e) => setNewItem(e.target.value)} />
             <button className="btn sm" disabled={!newItem.trim()}>
-              <Plus size={14} /> Add
+              Add
             </button>
           </form>
           {newItem.trim().length > 2 && matchIngredient(newItem).primary && (

@@ -16,10 +16,10 @@ export interface Analysis {
 export const ATTENTION_ORDER: Attention[] = ['high', 'moderate', 'low', 'none']
 
 export const ATTENTION_LABEL: Record<Attention, string> = {
-  high: 'High attention',
+  high: 'Notable concern',
   moderate: 'Worth noting',
   low: 'Minor note',
-  none: 'No notable concern',
+  none: 'No known concern',
 }
 
 export function entriesOf(m: MatchResult): IngredientInfo[] {

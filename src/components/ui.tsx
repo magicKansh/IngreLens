@@ -7,21 +7,16 @@ export function AttentionBadge({ level }: { level: Attention }) {
 }
 
 const EVIDENCE_LABEL: Record<Evidence, string> = {
-  strong: 'Strong evidence',
-  moderate: 'Moderate evidence',
-  limited: 'Limited evidence',
-  mixed: 'Mixed / debated',
+  strong: 'strong',
+  moderate: 'moderate',
+  limited: 'limited',
+  mixed: 'mixed, still debated',
 }
 
 export function EvidenceBadge({ level }: { level: Evidence }) {
   return (
-    <span className={`badge ev ev-${level}`} title="How settled the science is">
-      <span className="ev-bars" aria-hidden>
-        {[0, 1, 2].map((i) => (
-          <i key={i} className={i < { strong: 3, moderate: 2, limited: 1, mixed: 1 }[level] ? 'on' : ''} />
-        ))}
-      </span>
-      {EVIDENCE_LABEL[level]}
+    <span className="evidence" title="How settled the science is">
+      Evidence: <strong>{EVIDENCE_LABEL[level]}</strong>
     </span>
   )
 }
