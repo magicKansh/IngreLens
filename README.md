@@ -2,6 +2,10 @@
 
 Scan a food or drink ingredient label and get a plain-language explanation of every ingredient: what it does, potential benefits, possible downsides, how strong the evidence is, regulatory status and links to the sources.
 
+**Use it online:** https://magickansh.github.io/IngreLens/
+
+The site redeploys automatically on every push to `main` (see `.github/workflows/deploy.yml`).
+
 ## Features
 
 - **Photo OCR in the browser.** [Tesseract.js](https://github.com/naptha/tesseract.js) runs locally, so photos are never uploaded. Add a photo by upload, drag and drop, phone camera or clipboard paste.
